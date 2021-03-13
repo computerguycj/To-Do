@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using To_Do.Data;
 using To_Do.Models;
@@ -20,9 +21,29 @@ namespace To_Do.Controllers
         }
 
         // GET: List
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            return View(await _context.ListItems.ToListAsync());
+            ViewData["TextSort"] = string.IsNullOrEmpty(sortOrder) ? "text_desc" : "";
+            ViewData["CompletedSort"] = StringComparer.OrdinalIgnoreCase.Equals(sortOrder, "completed") ? "completed_desc" : "completed";
+            
+            var items = _context.ListItems.AsQueryable();
+            switch (sortOrder?.ToLower())
+            {
+                case "text_desc":
+                    items = items.OrderByDescending(i => i.Text);
+                    break;
+                case "completed":
+                    items = items.OrderBy(i => i.Completed);
+                    break;
+                case "completed_desc":
+                    items = items.OrderByDescending(i => i.Completed);
+                    break;
+                default:
+                    items = items.OrderBy(i => i.Text);
+                    break;
+            }
+            
+            return View(await items.AsNoTracking().ToListAsync());
         }
 
         // GET: List/Details/5

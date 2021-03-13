@@ -54,7 +54,7 @@ namespace To_Do.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Text,Completed")] ListItem listItem)
+        public async Task<IActionResult> Create([Bind("Text,Completed")] ListItem listItem)
         {
             if (ModelState.IsValid)
             {

@@ -21,12 +21,18 @@ namespace To_Do.Controllers
         }
 
         // GET: List
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string textFilter)
         {
             ViewData["TextSort"] = string.IsNullOrEmpty(sortOrder) ? "text_desc" : "";
             ViewData["CompletedSort"] = StringComparer.OrdinalIgnoreCase.Equals(sortOrder, "completed") ? "completed_desc" : "completed";
+            ViewData["TextFilter"] = textFilter;
             
             var items = _context.ListItems.AsQueryable();
+            if (!string.IsNullOrEmpty(textFilter))
+            {
+                items = items.Where(i => i.Text.Contains(textFilter));
+            }
+
             switch (sortOrder?.ToLower())
             {
                 case "text_desc":

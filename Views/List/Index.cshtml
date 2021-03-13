@@ -7,14 +7,24 @@
 <p>
     <a asp-action="Create">Add New Item</a>
 </p>
+
+<form asp-action="Index">
+    <div class="form-actions no-color">
+        <p>
+            Find by text: <input name="TextFilter" value="@ViewData["TextFilter"]" />
+            <input type="submit" value="Search" class="btn btn-primary" /> | <a asp-action="Index">Clear</a>
+        </p>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["TextSort"]">@Html.DisplayNameFor(model => model.Text)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["TextSort"]" asp-route-textFilter="@ViewData["TextFilter"]">@Html.DisplayNameFor(model => model.Text)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["CompletedSort"]">@Html.DisplayNameFor(model => model.Completed)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["CompletedSort"]" asp-route-textFilter="@ViewData["TextFilter"]">@Html.DisplayNameFor(model => model.Completed)</a>
             </th>
             <th></th>
         </tr>

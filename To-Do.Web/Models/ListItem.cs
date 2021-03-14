@@ -9,7 +9,7 @@ namespace To_Do.Models
     public class ListItem
     {
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "This can't be empty")]
         public string Text { get; set; }
         public bool Completed { get; set; }
     }

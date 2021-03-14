@@ -7,9 +7,8 @@
     Let's not make the user feel blamed for this. No scary or urgent styling is needed. No accusatory messaging.
     Instead, let's own the error and be as helpful as we can be.
 
-    For a production application I would minimally get a real email address from a configuration file. Ideally though, I would replace the code
-    below with a form that would submit the details and keep our actual email address hidden. Or better yet, I would submit the error to a help-desk
-    system through an API call. I envision this could collect basic information about what the user was doing at the time and other diagnostic details as needed.
+    For a production application I would minimally get a real email address from a configuration file or database.
+    Ideally, I would also replace this page with a controller and view to handle a post-back with dependency injection to work with a mail service.
 
     For this challenge though, I'm keeping it very simple and just using a basic mailto link below.
 -->

@@ -21,19 +21,24 @@ namespace To_Do.Controllers
         }
 
         // GET: List
-        public async Task<IActionResult> Index(string sortOrder, string textFilter)
+        public async Task<IActionResult> Index(string sort
+            , string filter
+            , string searchString
+            , int? pageNumber)
         {
-            ViewData["TextSort"] = string.IsNullOrEmpty(sortOrder) ? "text_desc" : "";
-            ViewData["CompletedSort"] = StringComparer.OrdinalIgnoreCase.Equals(sortOrder, "completed") ? "completed_desc" : "completed";
-            ViewData["TextFilter"] = textFilter;
-            
+            ViewData["Sort"] = sort;
+            ViewData["TextSort"] = string.IsNullOrEmpty(sort) ? "text_desc" : "";
+            ViewData["CompletedSort"] = StringComparer.OrdinalIgnoreCase.Equals(sort, "completed") ? "completed_desc" : "completed";
+            filter = searchString ?? filter;
+            ViewData["Filter"] = filter;
+
             var items = _context.ListItems.AsQueryable();
-            if (!string.IsNullOrEmpty(textFilter))
+            if (!string.IsNullOrEmpty(filter))
             {
-                items = items.Where(i => i.Text.Contains(textFilter));
+                items = items.Where(i => i.Text.Contains(filter));
             }
 
-            switch (sortOrder?.ToLower())
+            switch (sort?.ToLower())
             {
                 case "text_desc":
                     items = items.OrderByDescending(i => i.Text);
@@ -48,8 +53,19 @@ namespace To_Do.Controllers
                     items = items.OrderBy(i => i.Text);
                     break;
             }
+
+            int pageSize = 5;
+            return View(await PaginatedList<ListItem>.CreateAsync(items.AsNoTracking(), GetEffectivePageNumber(searchString, pageNumber), pageSize));
+        }
+
+        private static int GetEffectivePageNumber(string searchString, int? pageNumber)
+        {
+            //If we have a search string to process, reset the page number to 1
+            if (null != searchString)
+            { return 1; }
             
-            return View(await items.AsNoTracking().ToListAsync());
+            //If a page number was specified, return that, otherwise default to 1
+            return pageNumber ?? 1;
         }
 
         // GET: List/Details/5

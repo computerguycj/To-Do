@@ -1,4 +1,4 @@
-﻿@model IEnumerable<To_Do.Models.ListItem>
+﻿@model PaginatedList<To_Do.Models.ListItem>
 
 @{
     ViewData["Title"] = "List";
@@ -11,7 +11,7 @@
 <form asp-action="Index">
     <div class="form-actions no-color">
         <p>
-            Find by text: <input name="TextFilter" value="@ViewData["TextFilter"]" />
+            Find by text: <input name="SearchString" value="@ViewData["Filter"]" />
             <input type="submit" value="Search" class="btn btn-primary" /> | <a asp-action="Index">Clear</a>
         </p>
     </div>
@@ -21,27 +21,43 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["TextSort"]" asp-route-textFilter="@ViewData["TextFilter"]">@Html.DisplayNameFor(model => model.Text)</a>
+                <a asp-action="Index" asp-route-sort="@ViewData["TextSort"]" asp-route-textFilter="@ViewData["Filter"]">@Html.DisplayNameFor(model => model.FirstOrDefault().Text)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["CompletedSort"]" asp-route-textFilter="@ViewData["TextFilter"]">@Html.DisplayNameFor(model => model.Completed)</a>
+                <a asp-action="Index" asp-route-sort="@ViewData["CompletedSort"]" asp-route-textFilter="@ViewData["Filter"]">@Html.DisplayNameFor(model => model.FirstOrDefault().Completed)</a>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Text)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Completed)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Text)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Completed)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<a asp-action="Index"
+   asp-route-sort="@ViewData["Sort"]"
+   asp-route-pageNumber="@(Model.PageNumber - 1)"
+   asp-route-filter="@ViewData["Filter"]"
+   class="btn btn-default @(!Model.HasPreviousPage ? "disabled" : "")">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sort="@ViewData["Sort"]"
+   asp-route-pageNumber="@(Model.PageNumber + 1)"
+   asp-route-filter="@ViewData["Filter"]"
+   class="btn btn-default @(!Model.HasNextPage ? "disabled" : "")">
+    Next
+</a>

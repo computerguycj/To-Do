@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\To-Do.Web\To-Do.csproj" />
+    <ProjectReference Include="..\To-Do.Web\To-Do.Web.csproj" />
   </ItemGroup>
 
 </Project>

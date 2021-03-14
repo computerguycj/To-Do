@@ -68,24 +68,6 @@ namespace To_Do.Controllers
             return pageNumber ?? 1;
         }
 
-        // GET: List/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var listItem = await _context.ListItems
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (listItem == null)
-            {
-                return NotFound();
-            }
-
-            return View(listItem);
-        }
-
         // GET: List/Create
         public IActionResult Create()
         {
@@ -157,35 +139,6 @@ namespace To_Do.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(listItem);
-        }
-
-        // GET: List/Complete/5
-        public async Task<IActionResult> Complete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var listItem = await _context.ListItems
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (listItem == null)
-            {
-                return NotFound();
-            }
-
-            return View(listItem);
-        }
-
-        // POST: List/Complete/5
-        [HttpPost, ActionName("Complete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CompleteConfirmed(int id)
-        {
-            var listItem = await _context.ListItems.FindAsync(id);
-            listItem.Completed = !listItem.Completed;
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ListItemExists(int id)

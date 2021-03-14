@@ -27,7 +27,7 @@ namespace To_Do.Controllers
             , int? pageNumber)
         {
             ViewData["Sort"] = sort;
-            ViewData["TextSort"] = string.IsNullOrEmpty(sort) ? "text_desc" : "";
+            ViewData["TextSort"] = StringComparer.OrdinalIgnoreCase.Equals(sort, "text") ? "text_desc" : "text";
             ViewData["CompletedSort"] = StringComparer.OrdinalIgnoreCase.Equals(sort, "completed") ? "completed_desc" : "completed";
             filter = searchString ?? filter;
             ViewData["Filter"] = filter;
@@ -40,6 +40,9 @@ namespace To_Do.Controllers
 
             switch (sort?.ToLower())
             {
+                case "text":
+                    items = items.OrderBy(i => i.Text);
+                    break;
                 case "text_desc":
                     items = items.OrderByDescending(i => i.Text);
                     break;
@@ -50,7 +53,7 @@ namespace To_Do.Controllers
                     items = items.OrderByDescending(i => i.Completed);
                     break;
                 default:
-                    items = items.OrderBy(i => i.Text);
+                    items = items.OrderBy(i => i.Id);
                     break;
             }
 

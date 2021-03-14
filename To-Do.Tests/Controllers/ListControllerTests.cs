@@ -10,15 +10,11 @@ using System.Linq;
 
 namespace To_Do.Controllers.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class ListControllerTests
     {
-        public ListControllerTests()
-        {
-            InitializeDatabase();
-        }
-
-        private void InitializeDatabase()
+        [TestInitialize]
+        public void Initialize()
         {
             using (var context = new ListItemTestContext())
             {

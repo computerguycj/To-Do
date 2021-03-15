@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using To_Do.Data;
 using To_Do.Models;
 
@@ -14,10 +15,12 @@ namespace To_Do.Controllers
     public class ListController : Controller
     {
         private readonly ListItemContext _context;
+        private readonly ILogger<ListController> _logger;
 
-        public ListController(ListItemContext context)
+        public ListController(ListItemContext context, ILogger<ListController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: List
@@ -88,6 +91,7 @@ namespace To_Do.Controllers
             {
                 _context.Add(listItem);
                 await _context.SaveChangesAsync();
+                _logger.Log(LogLevel.Information, "Successfully created item", listItem);
                 return RedirectToAction(nameof(Index));
             }
             return View(listItem);
@@ -98,14 +102,17 @@ namespace To_Do.Controllers
         {
             if (id == null)
             {
+                _logger.Log(LogLevel.Error, "Edit method called without an id");
                 return NotFound();
             }
 
             var listItem = await _context.ListItems.FindAsync(id);
             if (listItem == null)
             {
+                _logger.Log(LogLevel.Error, $"Unable to find item with id: {id}");
                 return NotFound();
             }
+
             return View(listItem);
         }
 
@@ -118,6 +125,7 @@ namespace To_Do.Controllers
         {
             if (id != listItem.Id)
             {
+                _logger.Log(LogLevel.Warning, "Edit POST method called with a different id than the object's id");
                 return NotFound();
             }
 
@@ -128,8 +136,9 @@ namespace To_Do.Controllers
                     _context.Update(listItem);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
+                    _logger.Log(LogLevel.Error, "Edit POST method failed", ex);
                     if (!ListItemExists(listItem.Id))
                     {
                         return NotFound();
@@ -139,6 +148,8 @@ namespace To_Do.Controllers
                         throw;
                     }
                 }
+
+                _logger.Log(LogLevel.Information, "Successfully edited item", listItem);
                 return RedirectToAction(nameof(Index));
             }
             return View(listItem);
@@ -156,15 +167,20 @@ namespace To_Do.Controllers
             {
                 var item = _context.ListItems.FindAsync(id).Result;
                 if (null == item)
-                { return BadRequest(new { error = $"Can't find item with id: {id}." }); }
+                {
+                    _logger.Log(LogLevel.Warning, $"ToggleComplete method couldn't find an item with id: {id}");
+                    return BadRequest(new { error = $"Can't find item with id: {id}." });
+                }
 
                 item.Completed = !item.Completed;
                 _context.SaveChangesAsync();
 
+                _logger.Log(LogLevel.Information, $"ToggleComplete method succeeded for id: {id}");
                 return Json(new { msg = $"Successfully toggled item id: {id}." });
             }
             catch (Exception ex)
             {
+                _logger.Log(LogLevel.Error, "ToggleComplete method failed", ex);
                 throw ex;
             }
         }

@@ -65,10 +65,10 @@
 <script>
     function toggleCompleted(itemId) {
         $.ajax({
-            type: "PUT",
+            method: "PUT",
             url: "/List/ToggleComplete/" + itemId,
             error: function () {
-                alert("Sorry, we couldn't complete this item. Try again later.");
+                alert("Sorry, we couldn't update this item. Try again later.");
             }  
         });
     }

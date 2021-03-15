@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "List";
 }
-
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <p>
     <a asp-action="Create">Add New Item</a>
 </p>
@@ -37,7 +37,7 @@
                         @Html.DisplayFor(modelItem => item.Text)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Completed)
+                        @Html.CheckBoxFor(modelItem => item.Completed, new { onclick = string.Format("toggleCompleted({0})", item.Id) })
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
@@ -62,3 +62,14 @@
     class="btn btn-default @(!Model.HasNextPage ? "disabled" : "")">
     Next
 </a>
+<script>
+    function toggleCompleted(itemId) {
+        $.ajax({
+            type: "PUT",
+            url: "/List/ToggleComplete/" + itemId,
+            error: function () {
+                alert("Sorry, we couldn't complete this item. Try again later.");
+            }  
+        });
+    }
+</script>

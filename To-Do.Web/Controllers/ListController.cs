@@ -148,5 +148,25 @@ namespace To_Do.Controllers
         {
             return _context.ListItems.Any(e => e.Id == id);
         }
+
+        [HttpPut]
+        public ActionResult ToggleComplete(int? id)
+        {
+            try
+            {
+                var item = _context.ListItems.FindAsync(id).Result;
+                if (null == item)
+                { return BadRequest(new { error = $"Can't find item with id: {id}." }); }
+
+                item.Completed = !item.Completed;
+                _context.SaveChangesAsync();
+
+                return Json(new { msg = $"Successfully toggled item id: {id}." });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
